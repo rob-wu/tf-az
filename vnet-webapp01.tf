@@ -12,7 +12,6 @@ resource "azurerm_virtual_network" "vnet-webapp01" {
     security_group                  = azurerm_network_security_group.nsg-webapp01.id
     default_outbound_access_enabled = false
   }
-
   tags = {
     owner = "terraform"
   }
