@@ -1,7 +1,5 @@
 # This pipeline is triggered on merge to the main branch for Terraform files only
-trigger: none
-
-pr: 
+trigger: 
   branches:
     include:
       - main
@@ -9,6 +7,8 @@ pr:
     include:
       - '**/*.tf'
       - '*.tf'
+pr: none
+
 
 stages:
   - stage: Terraform
