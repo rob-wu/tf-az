@@ -39,4 +39,14 @@ This repository is used to demonstrate how to create a web app with sql backend 
 The build file is located in /.pipelines/build-tf.yaml. The pipeline will attempt to initialize, validate and plan Terraform code on pushes to PR and initalize, validate and apply -auto-approve if the PR is approved and merged into main. 
 
 ## Rollback
-Use git to revert in the event of an error or failed state
+Use git log to view the previous commits
+
+`git log`
+
+Run git checkout with the desired commit
+
+`git switch $commit --detach`
+
+Run Terraform against detached branch
+
+`terraform apply -auto-approve`
