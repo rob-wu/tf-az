@@ -13,75 +13,36 @@ variables:
   TF_LOG_PATH: "terraform.log"
 
 stages:
-  - stage: Terraform
-    jobs:
-      # Job for PRs
-      - job: PR_Pipeline
-        displayName: 'Terraform on PR'
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: TerraformInstaller@0
-            inputs:
-              terraformVersion: latest
+- stage: Plan
+  displayName: 'Terraform Plan'
+  jobs:
+  - job: TerraformPlan
+    displayName: 'Terraform Plan'
+    steps:
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
 
-          - script: |
-              terraform init
-              terraform validate
-            displayName: 'Terraform Init and Validate on PR'
-            failOnStderr: true
-          - script: |
-              terraform plan
-            displayName: 'Terraform Plan on PR'
-            failOnStderr: true
+    - script: |
+        terraform --version
+        terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
+        terraform validate
+        terraform plan -out=tfplan
+      displayName: 'Terraform Init and Plan'
 
-      # Job for Merge to Main
-      - job: MainMergePipeline
-        displayName: 'Terraform on Merge to Main'
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: TerraformInstaller@0
-            inputs:
-              terraformVersion: latest
+- stage: Deploy
+  displayName: 'Terraform Apply'
+  jobs:
+  - job: TerraformApply
+    displayName: 'Terraform Apply'
+    steps:
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
 
-          - script: |
-              terraform init
-              terraform validate
-            displayName: 'Terraform Init and Validate on Merge to Main'
-            failOnStderr: true
-
-          - script: |
-              terraform apply -auto-approve
-            displayName: 'Terraform Apply on Merge to Main'
-            failOnStderr: true
-
-      # Job for On-Demand Execution
-      - job: OnDemandPipeline
-        displayName: 'Terraform On-Demand'
-        condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendAzureRmUseEnvironmentVariablesForAuthentication: false
-              backendAzureRmUseEntraIdForAuthentication: true
-              backendServiceArm: 'terraform'
-              backendAzureRmStorageAccountName: 'robertwutfstates'
-              backendAzureRmContainerName: 'azurerm-tfstate'
-              backendAzureRmKey: 'azurerm-tfstate.tfstate'
-              backendAzureRmResourceGroupName: 'rg-tfstates'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'validate'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              environmentServiceNameAzureRM: 'terraform'
+    - script: |
+        terraform --version
+        terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
+        terraform validate
+        terraform apply -auto-approve 
+      displayName: 'Terraform Init and Apply'
