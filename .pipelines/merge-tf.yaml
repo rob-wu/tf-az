@@ -1,22 +1,10 @@
 trigger:
   branches:
-    exclude:
-      - '*'
+    include:
+      - main
   paths:
     include:
       - '**/*.tf'
-
-pr:
-  branches:
-    include:
-      - '*'
-  paths:
-    include:
-      - '**/*.tf'
-
-variables:
-  TF_LOG: "INFO"
-  TF_LOG_PATH: "terraform.log"
 
 stages:
   - stage: Terraform
@@ -80,7 +68,6 @@ stages:
       # Job for On-Demand Execution
       - job: OnDemandPipeline
         displayName: 'Terraform On-Demand'
-        condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'))
         pool:
           vmImage: 'ubuntu-latest'
         steps:

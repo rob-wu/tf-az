@@ -1,0 +1,38 @@
+trigger: none
+
+pr: 
+  branches:
+    include:
+      - '*'
+  paths:
+    include:
+      - '**/*.tf'
+
+stages:
+  - stage: Terraform
+    jobs:
+      # Job for PRs
+      - job: PR_Pipeline
+        displayName: 'Terraform on PR'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendAzureRmUseEnvironmentVariablesForAuthentication: true
+              backendServiceArm: 'terraform'
+              backendAzureRmResourceGroupName: 'rg-tfstates'
+              backendAzureRmStorageAccountName: 'robertwutfstates'
+              backendAzureRmContainerName: 'azurerm-tfstate'
+              backendAzureRmKey: 'azurerm-tfstate.tfstate'
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'terraform-service-principal'
