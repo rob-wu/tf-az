@@ -9,65 +9,8 @@ trigger:
 stages:
   - stage: Terraform
     jobs:
-      # Job for PRs
-      - job: PR_Pipeline
-        displayName: 'Terraform on PR'
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendAzureRmUseEnvironmentVariablesForAuthentication: true
-              backendServiceArm: 'terraform'
-              backendAzureRmResourceGroupName: 'rg-tfstates'
-              backendAzureRmStorageAccountName: 'robertwutfstates'
-              backendAzureRmContainerName: 'azurerm-tfstate'
-              backendAzureRmKey: 'azurerm-tfstate.tfstate'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'validate'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              commandOptions: '-auto-approve'
-              environmentServiceNameAzureRM: 'terraform-service-principal'
-
-      # Job for Merge to Main
       - job: MainMergePipeline
         displayName: 'Terraform on Merge to Main'
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendAzureRmUseEnvironmentVariablesForAuthentication: true
-              backendServiceArm: 'terraform'
-              backendAzureRmResourceGroupName: 'rg-tfstates'
-              backendAzureRmStorageAccountName: 'robertwutfstates'
-              backendAzureRmContainerName: 'azurerm-tfstate'
-              backendAzureRmKey: 'azurerm-tfstate.tfstate'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'validate'
-          - task: TerraformTaskV4@4
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              commandOptions: '-auto-approve'
-              environmentServiceNameAzureRM: 'terraform-service-principal'
-
-      # Job for On-Demand Execution
-      - job: OnDemandPipeline
-        displayName: 'Terraform On-Demand'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
