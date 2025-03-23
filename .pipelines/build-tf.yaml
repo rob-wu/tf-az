@@ -72,6 +72,10 @@ stages:
               backendAzureRmUseEnvironmentVariablesForAuthentication: false
               backendAzureRmUseEntraIdForAuthentication: true
               backendServiceArm: 'terraform'
+              backendAzureRmStorageAccountName: 'robertwutfstates'
+              backendAzureRmContainerName: 'azurerm-tfstate'
+              backendAzureRmKey: 'azurerm-tfstate.tfstate'
+              backendAzureRmResourceGroupName: 'rg-tfstates'
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
