@@ -1,9 +1,11 @@
-trigger: none
-
-pr: 
+trigger:
   branches:
+    exclude:
+      - main
+  paths:
     include:
-      - '*'
+      - '**/*.tf'
+      - '*.tf'
 
 stages:
   - stage: Terraform
