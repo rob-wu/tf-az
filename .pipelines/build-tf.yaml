@@ -45,8 +45,7 @@ stages:
           - task: TerraformTaskV4@4
             inputs:
               provider: 'azurerm'
-              command: 'apply'
-              commandOptions: '-auto-approve'
+              command: 'plan'
               environmentServiceNameAzureRM: 'terraform-service-principal'
 
       # Job for Merge to Main
