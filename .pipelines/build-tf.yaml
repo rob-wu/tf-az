@@ -1,0 +1,86 @@
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+pr:
+  branches:
+    include:
+      - '*'
+
+variables:
+  TF_LOG: "INFO"
+  TF_LOG_PATH: "terraform.log"
+
+stages:
+  - stage: Terraform
+    jobs:
+      # Job for PRs
+      - job: PR_Pipeline
+        displayName: 'Terraform on PR'
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: latest
+
+          - script: |
+              terraform init
+              terraform validate
+            displayName: 'Terraform Init and Validate on PR'
+            failOnStderr: true
+          - script: |
+              terraform plan
+            displayName: 'Terraform Plan on PR'
+            failOnStderr: true
+
+      # Job for Merge to Main
+      - job: MainMergePipeline
+        displayName: 'Terraform on Merge to Main'
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: latest
+
+          - script: |
+              terraform init
+              terraform validate
+            displayName: 'Terraform Init and Validate on Merge to Main'
+            failOnStderr: true
+
+          - script: |
+              terraform apply -auto-approve
+            displayName: 'Terraform Apply on Merge to Main'
+            failOnStderr: true
+
+      # Job for On-Demand Execution
+      - job: OnDemandPipeline
+        displayName: 'Terraform On-Demand'
+        condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'))
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: latest
+
+          - script: |
+              terraform init
+              terraform validate
+            displayName: 'Terraform Init and Validate On-Demand'
+            failOnStderr: true
+
+          - script: |
+              terraform plan
+            displayName: 'Terraform Plan On-Demand'
+            failOnStderr: true
+
+          - script: |
+              terraform apply -auto-approve
+            displayName: 'Terraform Apply On-Demand'
+            failOnStderr: true
