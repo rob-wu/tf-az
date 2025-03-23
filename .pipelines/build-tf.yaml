@@ -84,4 +84,4 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               commandOptions: '-auto-approve'
-              environmentServiceNameAzureRM: 'terraform'
+              environmentServiceNameAzureRM: 'terraform-service-principal'
