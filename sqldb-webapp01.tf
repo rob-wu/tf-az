@@ -12,5 +12,6 @@ resource "azurerm_mssql_database" "sqldb-webapp01" {
   #lifecycle {
   #  prevent_destroy = true
   #}
+  
   depends_on = [azurerm_mssql_server.sql-webapp01]
 }
