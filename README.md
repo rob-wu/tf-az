@@ -17,11 +17,11 @@ This repository is used to demonstrate how to create a web app with sql backend 
 
 ### 3. Clone this repo
 
-` git clone https://github.com/rob-wu/some-repo.git`
+` git clone https://github.com/rob-wu/tf-az.git`
 
 ### 4. Change directory into repostiory and initialize Terraform backend
 
-`cd some-repo && terraform init`
+`cd tf-az && terraform init`
 
 ### 5. Validate Terraform code for syntax errors
 
