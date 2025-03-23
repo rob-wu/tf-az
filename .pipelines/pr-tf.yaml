@@ -4,9 +4,6 @@ pr:
   branches:
     include:
       - '*'
-  paths:
-    include:
-      - '**/*.tf'
 
 stages:
   - stage: Terraform
