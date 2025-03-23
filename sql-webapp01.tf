@@ -6,6 +6,7 @@ resource "azurerm_mssql_server" "sql-webapp01" {
   # secrets pulled from Azure KV
   administrator_login          = data.azurerm_key_vault_secret.sql-user.value
   administrator_login_password = data.azurerm_key_vault_secret.sql-passwd.value
+  
   tags = {
     owner = "terraform"
   }
