@@ -15,5 +15,6 @@ resource "azurerm_virtual_network" "vnet-webapp01" {
   tags = {
     owner = "terraform"
   }
+  
   depends_on = [azurerm_resource_group.rg-webapp01]
 }
