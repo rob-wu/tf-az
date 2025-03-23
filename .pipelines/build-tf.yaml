@@ -65,22 +65,19 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: TerraformInstaller@0
+          - task: TerraformTaskV4@4
             inputs:
-              terraformVersion: latest
-
-          - script: |
-              terraform init
-              terraform validate
-            displayName: 'Terraform Init and Validate On-Demand'
-            failOnStderr: true
-
-          - script: |
-              terraform plan
-            displayName: 'Terraform Plan On-Demand'
-            failOnStderr: true
-
-          - script: |
-              terraform apply -auto-approve
-            displayName: 'Terraform Apply On-Demand'
-            failOnStderr: true
+              provider: 'azurerm'
+              command: 'init'
+              backendAzureRmUseEnvironmentVariablesForAuthentication: false
+              backendAzureRmUseEntraIdForAuthentication: true
+              backendServiceArm: 'terraform'
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'terraform'
